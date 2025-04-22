@@ -22,15 +22,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-//                .securityMatcher("/**")     // restricts filter chain to specific patterns
+                .securityMatcher("/**")     // restricts filter chain to specific patterns
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .build();
-
     }
 
     @Bean
