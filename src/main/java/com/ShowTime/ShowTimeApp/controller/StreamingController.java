@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/stream")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("${allowCrossOrigin}")
 public class StreamingController {
 
     @GetMapping("/video/{id}")

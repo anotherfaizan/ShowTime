@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("${allowCrossOrigin}")
 public class UploadController {
 
     private final UploadService uploadService;
