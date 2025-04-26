@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@Document(collection = "UserInfo")
+@Document(collection = "videos")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,4 +15,6 @@ public class Video {
     private String id;
     private String fileName;
     private String description;
+    private String contentType;
+    private String filePath;
 }
