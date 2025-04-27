@@ -22,11 +22,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/**")     // restricts filter chain to specific patterns
+                .securityMatcher("/**")    // restricts filter chain to specific patterns
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
                         .anyRequest().authenticated()
+//                                .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .build();
@@ -56,10 +57,15 @@ public class SecurityConfig {
             // Example in-memory user
             if (username.equals("admin")) {
                 return User.withUsername("admin")
+                        .password(passwordEncoder().encode("admin"))
+                        .roles("ADMIN")
+                        .build();
+            } else if(username.equals("user")){
+                return User.withUsername("user")
                         .password(passwordEncoder().encode("password"))
                         .roles("USER")
                         .build();
-            } else {
+            }else {
                 throw new UsernameNotFoundException("User not found");
             }
         };
