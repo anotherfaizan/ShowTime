@@ -3,7 +3,7 @@ package com.ShowTime.ShowTimeApp.service.impl;
 import com.ShowTime.ShowTimeApp.entities.Video;
 import com.ShowTime.ShowTimeApp.mapper.VideoMapper;
 import com.ShowTime.ShowTimeApp.modal.VideoDto;
-import com.ShowTime.ShowTimeApp.repository.UploadDAO;
+import com.ShowTime.ShowTimeApp.repository.VideoRepository;
 import com.ShowTime.ShowTimeApp.service.UploadService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +25,10 @@ public class UploadServiceImpl implements UploadService {
     @Value("${files.video}")
     private String DIR;
 
-    private UploadDAO uploadDAO;
+    private final VideoRepository videoRepository;
 
-    public UploadServiceImpl(UploadDAO uploadDAO){
-        this.uploadDAO = uploadDAO;
+    public UploadServiceImpl(VideoRepository videoRepository){
+        this.videoRepository = videoRepository;
     }
 
     @PostConstruct
@@ -62,7 +62,7 @@ public class UploadServiceImpl implements UploadService {
             video.setContentType(contentType);
             video.setFilePath(path.toString());
 
-            return uploadDAO.save(video);
+            return videoRepository.save(video);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
