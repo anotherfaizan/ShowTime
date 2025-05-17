@@ -2,6 +2,7 @@ package com.ShowTime.ShowTimeApp.controller;
 
 import com.ShowTime.ShowTimeApp.entities.Video;
 import com.ShowTime.ShowTimeApp.service.VideoStreamService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -21,7 +22,8 @@ import java.nio.file.Paths;
 @RequestMapping("/stream")
 public class StreamingController {
 
-    public static final int CHUNK_SIZE=1024*1024;   //1MB
+    @Value("${video.chunk.size}")
+    private int CHUNK_SIZE;   //1MB
 
     private final VideoStreamService videoStreamService;
 
@@ -46,7 +48,7 @@ public class StreamingController {
                 .body(resource);
     }
 
-    @GetMapping("/video/range/{id}")
+    @GetMapping("/video/range/{videoId}")
     public ResponseEntity<Resource> streamVideoInRange(@PathVariable String videoId, @RequestHeader(value = "range", required = false) String range){
         Video video = videoStreamService.getVideo(videoId);
 
