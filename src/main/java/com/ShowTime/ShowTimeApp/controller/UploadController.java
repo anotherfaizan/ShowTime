@@ -1,14 +1,16 @@
 package com.ShowTime.ShowTimeApp.controller;
 
+import com.ShowTime.ShowTimeApp.entities.Video;
 import com.ShowTime.ShowTimeApp.modal.VideoDto;
 import com.ShowTime.ShowTimeApp.service.UploadService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin("${allowCrossOrigin}")
 public class UploadController {
 
     private final UploadService uploadService;
@@ -18,8 +20,15 @@ public class UploadController {
     }
 
     @PostMapping("/upload")
-    private ResponseEntity<String> uploadVideo(@RequestBody VideoDto videoDto){
-        uploadService.uploadVideo(videoDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+    private ResponseEntity<String> uploadVideo(@RequestParam("file") MultipartFile file){
+        VideoDto videoDto = new VideoDto();
+
+        Video savedVideo  = uploadService.uploadVideo(videoDto, file);
+
+        if(savedVideo != null){
+            return ResponseEntity.ok(savedVideo.getId());
+        } else{
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Video not uploaded");
+        }
     }
 }
