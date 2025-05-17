@@ -24,6 +24,9 @@ public class JwtUtils {
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
+        if( null == bearerToken){
+            bearerToken = request.getParameter("token");
+        }
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             // Removing Bearer prefix
             return bearerToken.substring(7);

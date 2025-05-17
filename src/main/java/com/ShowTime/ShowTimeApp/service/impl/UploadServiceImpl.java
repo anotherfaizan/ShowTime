@@ -3,7 +3,7 @@ package com.ShowTime.ShowTimeApp.service.impl;
 import com.ShowTime.ShowTimeApp.entities.Video;
 import com.ShowTime.ShowTimeApp.mapper.VideoMapper;
 import com.ShowTime.ShowTimeApp.modal.VideoDto;
-import com.ShowTime.ShowTimeApp.repository.UploadDAO;
+import com.ShowTime.ShowTimeApp.repository.VideoRepository;
 import com.ShowTime.ShowTimeApp.service.UploadService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +25,13 @@ public class UploadServiceImpl implements UploadService {
     @Value("${files.video}")
     private String DIR;
 
-    private UploadDAO uploadDAO;
+    @Value("${files.video.hls}")
+    private String HLS_DIR;
 
-    public UploadServiceImpl(UploadDAO uploadDAO){
-        this.uploadDAO = uploadDAO;
+    private final VideoRepository videoRepository;
+
+    public UploadServiceImpl(VideoRepository videoRepository){
+        this.videoRepository = videoRepository;
     }
 
     @PostConstruct
@@ -38,6 +41,12 @@ public class UploadServiceImpl implements UploadService {
         // creating folder if it doesn't exist already
         if(!file.exists()){
             file.mkdir();
+        }
+
+        try {
+            Files.createDirectories(Paths.get(HLS_DIR));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -62,8 +71,57 @@ public class UploadServiceImpl implements UploadService {
             video.setContentType(contentType);
             video.setFilePath(path.toString());
 
-            return uploadDAO.save(video);
+            Video savedVideo = videoRepository.save(video);
+            
+            // processing the video for HLS
+            processVideo(savedVideo.getId(), path);
+            
+            return savedVideo;
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void processVideo(String videoId, Path videoFilePath) {
+        try {
+            Path outputPath = Paths.get(HLS_DIR, videoId);
+            Files.createDirectories(outputPath);
+
+            // ffmpeg command to encode
+            String ffmpegCmd = String.format(
+                    "ffmpeg -i \"%s\" " +
+                            "-c:v libx264 -profile:v main -preset veryfast -g 50 -keyint_min 50 -sc_threshold 0 " +
+                            "-c:a aac -b:a 128k " +
+                            "-hls_time 10 -hls_list_size 0 -hls_segment_type mpegts " +
+                            "-hls_flags independent_segments " +
+                            "-hls_segment_filename \"%s/segment_%%03d.ts\" \"%s/master.m3u8\"",
+                    videoFilePath, outputPath, outputPath
+            );
+
+            // Get the operating system name from the system properties
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder processBuilder;
+
+            // Launching a bash/cmd shell to execute the ffmpegCmd string command
+            if (os.contains("win")) {
+                processBuilder = new ProcessBuilder("cmd.exe", "/c", ffmpegCmd);
+            } else {
+                // On Unix/Linux/macOS
+                processBuilder = new ProcessBuilder("/bin/bash", "-c", ffmpegCmd);
+            }
+
+            processBuilder.inheritIO();
+            Process process = processBuilder.start();
+
+            // Waiting for the process to complete and capturing the exit code
+            int exit = process.waitFor();
+            if (exit != 0) {
+                throw new RuntimeException("Video processing failed!");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Video Processing failed!");
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
