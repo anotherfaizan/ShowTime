@@ -1,6 +1,6 @@
 # 🎬 Show Time
 
-**ShowTimeApp** is a full-stack video streaming platform built with **Spring Boot (backend)** and **React (frontend)**. It includes functionality for user authentication (with JWT), secure video uploads by admins, HTTP Live Streaming (HLS) (.m3u8) methods, and chunk-based video streaming. The app is protected with role-based access and supports CORS for frontend integration.
+**Show Time** is a full-stack video streaming platform built with **Spring Boot (backend)** and **React (frontend)**. It includes functionality for user authentication (with JWT), secure video uploads by admins, HTTP Live Streaming (HLS) (.m3u8) methods, and chunk-based video streaming. The app is protected with role-based access and supports CORS for frontend integration.
 
 ---
 
