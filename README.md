@@ -2,6 +2,10 @@
 
 **Show Time** is a full-stack video streaming platform built with **Spring Boot (backend)** and **React (frontend)**. It includes functionality for user authentication (with JWT), secure video uploads by admins, HTTP Live Streaming (HLS) (.m3u8) methods, and chunk-based video streaming. The app is protected with role-based access and supports CORS for frontend integration.
 
+This is a **mono repository** that contains both the backend and frontend projects in separate directories. They are independently developed and run, but designed to work together seamlessly.
+
+- 🔗 [Go to Backend Repository](https://github.com/abdulirfan/ShowTime/tree/develop)
+- 🔗 [Go to Frontend Repository](https://github.com/Deepti-Bhuyan-8/ShowTime-Frontend/tree/develop)
 ---
 
 ## 🚀 Features
